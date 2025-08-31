@@ -1,0 +1,4 @@
+package pdfsvc
+
+func Entrypoint() {
+}

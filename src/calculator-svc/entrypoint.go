@@ -1,0 +1,4 @@
+package calculatorsvc
+
+func Entrypoint() {
+}

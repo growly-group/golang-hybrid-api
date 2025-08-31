@@ -1,0 +1,4 @@
+package authsvc
+
+func Entrypoint() {
+}

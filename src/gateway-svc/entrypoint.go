@@ -1,0 +1,4 @@
+package gatewaysvc
+
+func Entrypoint() {
+}
