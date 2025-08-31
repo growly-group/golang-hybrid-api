@@ -1,0 +1,53 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+	"sync"
+
+	"github.com/joho/godotenv"
+)
+
+type entrypointFunc func()
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Warning: .env file not found or failed to load")
+	}
+	targetServices := os.Getenv("TARGET_SERVICES")
+	if targetServices == "" {
+		fmt.Println("TARGET_SERVICES environment variable not set")
+		os.Exit(1)
+	}
+
+	entrypoints := map[string]entrypointFunc{}
+
+	services := strings.Split(targetServices, ",")
+	var wg sync.WaitGroup
+
+	for _, serviceName := range services {
+		trimmedServiceName := strings.TrimSpace(serviceName)
+		if trimmedServiceName == "" {
+			continue
+		}
+
+		entrypoint, ok := entrypoints[trimmedServiceName]
+		if !ok {
+			fmt.Printf("No entrypoint found for service: %s\n", trimmedServiceName)
+			continue
+		}
+
+		wg.Add(1)
+		go func(ep entrypointFunc, name string) {
+			defer wg.Done()
+			fmt.Printf("Starting service: %s\n", name)
+			ep()
+			fmt.Printf("Service finished: %s\n", name)
+		}(entrypoint, trimmedServiceName)
+	}
+
+	wg.Wait()
+	fmt.Println("All services have finished.")
+}
