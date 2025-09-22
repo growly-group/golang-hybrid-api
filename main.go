@@ -6,6 +6,10 @@ import (
 	"strings"
 	"sync"
 
+	authsvc "github.com/growly-group/golang-hybrid-api/src/auth-svc"
+	calculatorsvc "github.com/growly-group/golang-hybrid-api/src/calculator-svc"
+	gatewaysvc "github.com/growly-group/golang-hybrid-api/src/gateway-svc"
+	pdfsvc "github.com/growly-group/golang-hybrid-api/src/pdf-svc"
 	"github.com/joho/godotenv"
 )
 
@@ -22,7 +26,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	entrypoints := map[string]entrypointFunc{}
+	entrypoints := map[string]entrypointFunc{
+		"auth-svc":       authsvc.Entrypoint,
+		"calculator-svc": calculatorsvc.Entrypoint,
+		"gateway-svc":    gatewaysvc.Entrypoint,
+		"pdf-svc":        pdfsvc.Entrypoint,
+	}
 
 	services := strings.Split(targetServices, ",")
 	var wg sync.WaitGroup

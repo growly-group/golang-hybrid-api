@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Example 1: All services in one container (monolithic)
+  monolith:
+    build: .
+    environment:
+      - TARGET_SERVICES=calculator-svc,auth-svc,gateway-svc,pdf-svc
+    ports:
+      - "8080:8080"
+    profiles:
+      - monolith
+
+  # Example 2: Distributed microservices
+  calculator:
+    build: .
+    environment:
+      - TARGET_SERVICES=calculator-svc
+    ports:
+      - "8080:8080"
+    profiles:
+      - distributed
+
+  auth:
+    build: .
+    environment:
+      - TARGET_SERVICES=auth-svc
+    ports:
+      - "8081:8081"
+    profiles:
+      - distributed
+
+  gateway:
+    build: .
+    environment:
+      - TARGET_SERVICES=gateway-svc
+      - CALCULADOR_SERVICE_URL=http://calculator:8080
+      - AUTH_SERVICE_URL=http://auth:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      - calculator
+      - auth
+    profiles:
+      - distributed
+
+# Usage:
+# Monolithic deployment:    docker-compose --profile monolith up
+# Distributed deployment:   docker-compose --profile distributed up
